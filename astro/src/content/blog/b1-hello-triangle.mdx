@@ -47,7 +47,7 @@ In comes [Emscripten](https://emscripten.org/), a toolchain for building C/C++ p
 If you are not familiar with, how a programm that renders is structured, I advise you checkout [learn OpenGl](https://learnopengl.com).
 It is a great resource for all things OpenGl, you can find the code we will be referencing [here](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp).
 
-For emscripten it is a little harder to find a hello triangle example so I'll propose this one to get us up and running:
+For emscripten it is a little harder to find a hello triangle example, so I'll propose this one to get us up and running:
 ``` cpp
 // main.cpp
 #include <emscripten/emscripten.h>
@@ -177,10 +177,146 @@ As well as some html glue:
 </html>
 ```
 Compile with:
-```
-emcc main.cpp -o hello_triangle.js     -sUSE_WEBGL2=1     -sFULL_ES3=1     -sALLOW_MEMORY_GROWTH=1     -sASSERTIONS=1
+```sh
+emcc main.cpp -o hello_triangle.js\
+    -sUSE_WEBGL2=1\
+    -sFULL_ES3=1\
+    -sALLOW_MEMORY_GROWTH=1\
+    -sASSERTIONS=1
 ```
 And run with:
-```
+```sh
 emrun --port 8080 .
 ```
+
+### Combining the examples into one project
+
+Let's introduce a common interface around the two:
+``` cpp
+class IBackend {
+public:
+    virtual void init() = 0;
+    virtual void do_main_loop() = 0;
+    virtual void cleanup() = 0;
+};
+
+class DesktopBackend: public IBackend;
+class BrowserBackend: public IBackend;
+```
+
+For now, we are not going to make any major abstractions just copy the main stages of the examples into each of the methods.
+This allows us to only have one check in main for which platform we are building for using a preprocessor statement.
+``` cpp
+int main() {
+    #ifdef __EMSCRIPTEN__
+    BrowserBackend b;
+    #else
+    DesktopBackend b;
+    #endif
+    b->init();
+    b->do_main_loop();
+    b->cleanup();
+    return 0;
+}
+```
+Next we are going to introduce a build-system: [Cmake](https://cmake.org/).
+
+``` cmake
+# introduce an option to check for what we are building
+option(BROWSER_BUILD "Building for browser or not" OFF)
+
+set(SOURCES main.cpp IBackend.h )
+set(DEPENDENCIES)
+
+if(BROWSER_BUILD)
+    list(APPEND SOURCES BrowserBackend.cpp BrowserBackend.h )
+    # copying over the html shell
+    set(CMAKE_EXECUTABLE_SUFFIX ".js")
+    configure_file(${CMAKE_SOURCE_DIR}/index.html ${CMAKE_BINARY_DIR}/index.html COPYONLY)
+else()
+    list(APPEND SOURCES DesktopBackend.cpp DesktopBackend.h )
+    # fechting some dependencies here ...
+    list(APPEND DEPENDENCIES glad glfw )
+endif()
+
+add_executable(${EXE_FILE} ${SOURCES} )
+target_link_libraries(${EXE_FILE} PRIVATE ${DEPENDENCIES})
+
+if(BROWSER_BUILD)
+    # and don't forget to add in the flag here
+    set(MY_FLAGS
+    "-sUSE_WEBGL2=1"
+    "-sFULL_ES3=1"
+    "-sALLOW_MEMORY_GROWTH=1"
+    "-sASSERTIONS=1"
+    )
+    target_compile_options(${EXE_FILE} PRIVATE ${MY_FLAGS} )
+    target_link_options(${EXE_FILE} PRIVATE ${MY_FLAGS} )
+endif()
+```
+
+With this system in place we can focus on abstracting out the similarities across th examples.
+
+### Abstracting the OpenGl version
+
+As the examples currently stand we have different versions of Open Gl in our desktop and browser code. In order for us to
+find an Abstraction among the two we will need to find a standard both versions support.
+
+Introducing **OpenGL ES 3.0**. This is the standard supported by WebGL 2 and gives us a recent graphics API that is supported on both platforms.
+Our Emscripten browser example is already using **OpenGL ES 3.0** so we dont need to change anything about it.
+
+For our desktop version we need to change the version of the shader to ``` #version 300 es``` and supply glfw with a new
+window hint:
+- ``` glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);```
+- ``` glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);```
+
+
+With the same GL version in place, we can extract out all the GL calls to the backend interface (
+I know interfaces shouldn't normally have code but we'll use this as a temporary stepping stone on our way to a uniform interace).
+When doing this you will run into the problem on not having clear insight which header the GL functions shall come from.
+We can get around this by declaring another header ```gl_backend.h``` which using another preprocessor includes the respective header.
+
+``` cpp
+#pragma once
+#ifdef __EMSCRIPTEN__
+    #include <GLES3/gl3.h>
+#else
+    #include <glad/glad.h>
+#endif
+```
+
+### Abstracting the windowing code
+
+Currently, our Emscripten example is using the Emscripten custom API to choose the context. In order to further
+simplify our code we can have Emscripten use glfw as well, but careful: this comes with drawbacks. The support for
+glfw isn't officially considered stable and some features like multiple windows are not supported so handle with caution.
+
+I chose to go that route anyway, because it is going to save some complexity when it comes to input handling down the line.
+We will need to include the ```-sUSE_GLFW=3``` flag for our compilation step. Besides that the only real difference between the
+browser and desktop versions is the loading of glad and the way the main loop is handled.
+
+Now you might run into another problem: How can the content of the main-loop get access to the variables it needs to process.
+For this we are going to use a lambda: ``` const std::function<void()>& main_loop_callback)``` and for the browser side
+```emscripten_set_main_loop_arg()```
+
+### Asset Loading
+At some stage in our game we will need separate asset files for shaders, textures, etc. This is were another quirk of
+Emscripten comes into play. Of course for both platforms we will need cmake to copy over the assets:
+
+``` add_custom_target(copy_assets COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${EXE_FILE}>/assets )```
+
+But additionally we will need emscripten to load the files. There are different ways to do this. Embedding, Fetching at Runtime,
+but for now we are going to focus on preloading the assets.
+
+The flag we need to add in order to do this is ``` "${CMAKE_CURRENT_SOURCE_DIR}/assets/@/assets" ```
+And in order to fetch the assets in our game we can access them from ```/assets/...``` unlike on the desktop where you would use something like:
+```  std::filesystem::canonical(path);```
+
+### Concluding Remarks
+
+While it takes some setup and might seem complicated at first, I think that it is really cool that you can write exactly
+the same c++ code for browser and for desktop when developing a game, and this at such a low level where you are even interfacing
+a graphics API. You can find the code at the stage presented in this blog [here](https://github.com/Hiqqup/cross_platform_game_engine/commit/1d5706301280a4d0bf35ebba4ac0a02f6c580184). I left out some details when it
+comes to configuring your editor environment to support your cross-platform development endeavors.
+
+I might feature them in future posts. Till then stay curious :^)
