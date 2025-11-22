@@ -1,0 +1,281 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-bvzihdzo> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="hiqqup.graphics" href="https://hiqqup.github.io/blog/rss.xml"><meta name="generator" content="Astro v5.16.0"><!-- Font preloads --><link rel="preload" href="/blog/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/blog/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin><!-- Canonical URL --><link rel="canonical" href="https://hiqqup.github.io/blog/blog/b1-hello-triangle/"><!-- Primary Meta Tags --><title>Cross-platform Hello Triangle</title><meta name="title" content="Cross-platform Hello Triangle"><meta name="description" content="Building a cross-platform game engine, using c++, OpenGl, glfw, emscripten."><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://hiqqup.github.io/blog/blog/b1-hello-triangle/"><meta property="og:title" content="Cross-platform Hello Triangle"><meta property="og:description" content="Building a cross-platform game engine, using c++, OpenGl, glfw, emscripten."><meta property="og:image" content="https://hiqqup.github.io/blog/_astro/blog-placeholder-1.Bx0Zcyzv.jpg"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://hiqqup.github.io/blog/blog/b1-hello-triangle/"><meta property="twitter:title" content="Cross-platform Hello Triangle"><meta property="twitter:description" content="Building a cross-platform game engine, using c++, OpenGl, glfw, emscripten."><meta property="twitter:image" content="https://hiqqup.github.io/blog/_astro/blog-placeholder-1.Bx0Zcyzv.jpg"><style>:root{--accent: #2337ff;--accent-dark: #000d8a;--black: 15, 18, 25;--gray: 96, 115, 159;--gray-light: 229, 233, 240;--gray-dark: 34, 41, 57;--gray-gradient: rgba(var(--gray-light), 50%), #fff;--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%)}@font-face{font-family:Atkinson;src:url(/blog/fonts/atkinson-regular.woff) format("woff");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:Atkinson;src:url(/blog/fonts/atkinson-bold.woff) format("woff");font-weight:700;font-style:normal;font-display:swap}body{font-family:Atkinson,sans-serif;margin:0;padding:0;text-align:left;background:linear-gradient(var(--gray-gradient)) no-repeat;background-size:100% 600px;word-wrap:break-word;overflow-wrap:break-word;color:rgb(var(--gray-dark));font-size:20px;line-height:1.7}main{width:900px;max-width:calc(100% - 2em);margin:auto;padding:3em 1em}h1,h2,h3,h4,h5,h6{margin:0 0 .5rem;color:rgb(var(--black));line-height:1.2}h1{font-size:3.052em}h2{font-size:2.441em}h3{font-size:1.953em}h4{font-size:1.563em}h5{font-size:1.25em}strong,b{font-weight:700}a,a:hover{color:var(--accent)}p{margin-bottom:1em}.prose p{margin-bottom:2em;font-size:1.2em}textarea{width:100%;font-size:16px}input{font-size:16px}table{width:100%}img{max-width:100%;height:auto;border-radius:8px}code{padding:2px 5px;background-color:rgb(var(--gray-light));border-radius:2px}pre{padding:1.5em;border-radius:8px}pre>code{all:unset}blockquote{border-left:4px solid var(--accent);padding:0 0 0 20px;margin:0;font-size:1.333em}hr{border:none;border-top:1px solid rgb(var(--gray-light))}@media(max-width:720px){body{font-size:18px}main{padding:1em}}.sr-only{border:0;padding:0;margin:0;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap}.table-with-borders table,.table-with-borders th,.table-with-borders td{border:1px solid #ccc;border-collapse:collapse;padding:6px 10px;font-size:1.1em}footer[data-astro-cid-sz7xmlte]{padding:2em 1em 6em;background:linear-gradient(var(--gray-gradient)) no-repeat;color:rgb(var(--gray));text-align:center}.social-links[data-astro-cid-sz7xmlte]{display:flex;justify-content:center;gap:1em;margin-top:1em}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]{text-decoration:none;color:rgb(var(--gray))}.social-links[data-astro-cid-sz7xmlte] a[data-astro-cid-sz7xmlte]:hover{color:rgb(var(--gray-dark))}a[data-astro-cid-eimmu3lg]{display:inline-block;text-decoration:none}a[data-astro-cid-eimmu3lg].active{font-weight:bolder;text-decoration:underline}header[data-astro-cid-3ef6ksr2]{margin:0;padding:0 1em;background:#fff;box-shadow:0 2px 8px rgba(var(--black),5%)}h2[data-astro-cid-3ef6ksr2]{margin:0;font-size:1em}h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2],h2[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none}nav[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{padding:1em .5em;color:var(--black);border-bottom:4px solid transparent;text-decoration:none}nav[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2].active{text-decoration:none;border-bottom-color:var(--accent)}.social-links[data-astro-cid-3ef6ksr2],.social-links[data-astro-cid-3ef6ksr2] a[data-astro-cid-3ef6ksr2]{display:flex}@media(max-width:720px){.social-links[data-astro-cid-3ef6ksr2]{display:none}}
+main[data-astro-cid-bvzihdzo]{width:calc(100% - 2em);max-width:100%;margin:0}.hero-image[data-astro-cid-bvzihdzo]{width:100%}.hero-image[data-astro-cid-bvzihdzo] img[data-astro-cid-bvzihdzo]{display:block;margin:0 auto;border-radius:12px;box-shadow:var(--box-shadow)}.prose[data-astro-cid-bvzihdzo]{width:1300px;max-width:calc(100% - 2em);margin:auto;padding:1em;color:rgb(var(--gray-dark))}.title[data-astro-cid-bvzihdzo]{margin-bottom:1em;padding:1em 0;text-align:center;line-height:1}.title[data-astro-cid-bvzihdzo] h1[data-astro-cid-bvzihdzo]{margin:0 0 .5em}.date[data-astro-cid-bvzihdzo]{margin-bottom:.5em;color:rgb(var(--gray))}.last-updated-on[data-astro-cid-bvzihdzo]{font-style:italic}
+</style></head> <body data-astro-cid-bvzihdzo> <header data-astro-cid-3ef6ksr2> <nav data-astro-cid-3ef6ksr2> <h2 data-astro-cid-3ef6ksr2><a href="/blog/" data-astro-cid-3ef6ksr2="true"> hiqqup.graphics </a></h2> <div class="internal-links" data-astro-cid-3ef6ksr2> <a href="/blog/" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg="true">  Home  </a>  <a href="/blog/blog" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg="true" class="active">  Blog  </a>  <a href="/blog/about" data-astro-cid-3ef6ksr2="true" data-astro-cid-eimmu3lg="true">  About  </a>  </div> <a href="https://github.com/hiqqup" target="_blank" data-astro-cid-3ef6ksr2> <span class="sr-only" data-astro-cid-3ef6ksr2>Follow hiqqup on github</span> <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" data-astro-cid-3ef6ksr2><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-3ef6ksr2></path></svg> </a> </nav> </header>  <main data-astro-cid-bvzihdzo> <article data-astro-cid-bvzihdzo> <div class="hero-image" data-astro-cid-bvzihdzo> <img src="/blog/_astro/hello-textured-rectangle.CQjxUKkg_Z1d5l6N.webp" alt data-astro-cid-bvzihdzo="true" loading="lazy" decoding="async" fetchpriority="auto" width="1020" height="510"> </div> <div class="prose" data-astro-cid-bvzihdzo> <div class="title" data-astro-cid-bvzihdzo> <div class="date" data-astro-cid-bvzihdzo> <time datetime="2025-11-21T23:00:00.000Z"> Nov 22, 2025 </time>  </div> <h1 data-astro-cid-bvzihdzo>Cross-platform Hello Triangle</h1> <hr data-astro-cid-bvzihdzo> </div>  <h3 id="motivation">Motivation</h3>
+<p>The uni project I will attend next year (Game Lab 3), requires us to build our own game engine using low level technologies.
+The tech stack proposed is:</p>
+<div class="table-with-borders">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Core</th><th>Auxiliary</th></tr></thead><tbody><tr><td>C++</td><td>glm</td></tr><tr><td>OpenGL (glad)</td><td>tinyGLTF</td></tr><tr><td>GLFW</td><td>soloud</td></tr></tbody></table></div>
+<p>I am not 100% going to stick to these libraries, for instance I hope next year I will already be using the industry standard API Vulkan.
+Until then, I will have to do a lot of learning, for which OpenGl is a better starting point.</p>
+<h3 id="why-cross-platform">Why cross-platform?</h3>
+<p>Another point where I will not 100% stick to the project guidelines is the target platform. We should develop our game
+mainly for Windows. Firstly I don’t use any Windows machines so that might be a challenge.</p>
+<p>Next developing for any one
+platform requires players to download the game before playing it. This isn’t great especially for small projects you
+don’t know you are going to enjoy or that you don’t trust. So I want my game to be in the browser so it is as accessible
+to everyone as possible.</p>
+<h3 id="how-to-achieve-cross-platform">How to achieve cross-platform?</h3>
+<p><a href="https://www.glfw.org/">GLFW</a> already supports a lot of platforms, such as Linux, Windows and macOS.
+But how are we going to achieve browser-compatibility using the proposed tech stack?</p>
+<p>In comes <a href="https://emscripten.org/">Emscripten</a>, a toolchain for building C/C++ programms to WebAssembly. Let’s see this in action.</p>
+<h3 id="hello-triangle-example-no-abstractions">Hello triangle example no abstractions</h3>
+<p>If you are not familiar with, how a programm that renders is structured, I advise you checkout <a href="https://learnopengl.com">learn OpenGl</a>.
+It is a great resource for all things OpenGl, you can find the code we will be referencing <a href="https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp">here</a>.</p>
+<p>For emscripten it is a little harder to find a hello triangle example, so I’ll propose this one to get us up and running:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="cpp"><code><span class="line"><span style="color:#6A737D">// main.cpp</span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &lt;emscripten/emscripten.h&gt;</span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &lt;emscripten/html5.h&gt;</span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &lt;GLES3/gl3.h&gt;</span></span>
+<span class="line"><span style="color:#F97583">#include</span><span style="color:#9ECBFF"> &lt;iostream&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">GLuint shaderProgram;</span></span>
+<span class="line"><span style="color:#E1E4E8">GLuint VAO;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#F97583"> char*</span><span style="color:#E1E4E8"> vertexShaderSource </span><span style="color:#F97583">=</span></span>
+<span class="line"><span style="color:#9ECBFF">R&quot;(#version 300 es</span></span>
+<span class="line"><span style="color:#9ECBFF">    layout(location = 0) in vec3 aPos;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#9ECBFF">    void main() {</span></span>
+<span class="line"><span style="color:#9ECBFF">        gl_Position = vec4(aPos, 1.0);</span></span>
+<span class="line"><span style="color:#9ECBFF">    }</span></span>
+<span class="line"><span style="color:#9ECBFF">)&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#F97583"> char*</span><span style="color:#E1E4E8"> fragmentShaderSource </span><span style="color:#F97583">=</span></span>
+<span class="line"><span style="color:#9ECBFF">R&quot;(#version 300 es</span></span>
+<span class="line"><span style="color:#9ECBFF">    precision mediump float;</span></span>
+<span class="line"><span style="color:#9ECBFF">    out vec4 FragColor;</span></span>
+<span class="line"><span style="color:#9ECBFF">    void main() {</span></span>
+<span class="line"><span style="color:#9ECBFF">        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);;</span></span>
+<span class="line"><span style="color:#9ECBFF">    }</span></span>
+<span class="line"><span style="color:#9ECBFF">)&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> updateViewport</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    double</span><span style="color:#E1E4E8"> width, height;</span></span>
+<span class="line"><span style="color:#B392F0">    emscripten_get_element_css_size</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;#canvas&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">width, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">height);</span></span>
+<span class="line"><span style="color:#B392F0">    emscripten_set_canvas_element_size</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;#canvas&quot;</span><span style="color:#E1E4E8">, (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">)width, (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">)height);</span></span>
+<span class="line"><span style="color:#B392F0">    glViewport</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">)width, (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8">)height);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> initGL</span><span style="color:#E1E4E8">(){</span></span>
+<span class="line"><span style="color:#E1E4E8">    EmscriptenWebGLContextAttributes attr;</span></span>
+<span class="line"><span style="color:#B392F0">    emscripten_webgl_init_context_attributes</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">attr);</span></span>
+<span class="line"><span style="color:#E1E4E8">    attr.alpha </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    attr.depth </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    attr.stencil </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    attr.antialias </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> false</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    attr.majorVersion </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 2</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    attr.minorVersion </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx </span><span style="color:#F97583">=</span></span>
+<span class="line"><span style="color:#B392F0">        emscripten_webgl_create_context</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;#canvas&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">attr);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (ctx </span><span style="color:#F97583">&lt;=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#B392F0">        std</span><span style="color:#E1E4E8">::cerr </span><span style="color:#F97583">&lt;&lt;</span><span style="color:#9ECBFF"> &quot;Failed to create WebGL2 context</span><span style="color:#79B8FF">\n</span><span style="color:#9ECBFF">&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    emscripten_webgl_make_context_current</span><span style="color:#E1E4E8">(ctx);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    GLuint vertexShader </span><span style="color:#F97583">=</span><span style="color:#B392F0"> glCreateShader</span><span style="color:#E1E4E8">(GL_VERTEX_SHADER);</span></span>
+<span class="line"><span style="color:#B392F0">    glShaderSource</span><span style="color:#E1E4E8">(vertexShader, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">vertexShaderSource, </span><span style="color:#79B8FF">nullptr</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">    glCompileShader</span><span style="color:#E1E4E8">(vertexShader);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    GLuint fragmentShader </span><span style="color:#F97583">=</span><span style="color:#B392F0"> glCreateShader</span><span style="color:#E1E4E8">(GL_FRAGMENT_SHADER);</span></span>
+<span class="line"><span style="color:#B392F0">    glShaderSource</span><span style="color:#E1E4E8">(fragmentShader, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">fragmentShaderSource, </span><span style="color:#79B8FF">nullptr</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">    glCompileShader</span><span style="color:#E1E4E8">(fragmentShader);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    shaderProgram </span><span style="color:#F97583">=</span><span style="color:#B392F0"> glCreateProgram</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">    glAttachShader</span><span style="color:#E1E4E8">(shaderProgram, vertexShader);</span></span>
+<span class="line"><span style="color:#B392F0">    glAttachShader</span><span style="color:#E1E4E8">(shaderProgram, fragmentShader);</span></span>
+<span class="line"><span style="color:#B392F0">    glLinkProgram</span><span style="color:#E1E4E8">(shaderProgram);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    glDeleteShader</span><span style="color:#E1E4E8">(vertexShader);</span></span>
+<span class="line"><span style="color:#B392F0">    glDeleteShader</span><span style="color:#E1E4E8">(fragmentShader);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    float</span><span style="color:#E1E4E8"> vertices[] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">        // positions</span></span>
+<span class="line"><span style="color:#79B8FF">         0.0</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">,  </span><span style="color:#79B8FF">0.5</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.0</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">        -</span><span style="color:#79B8FF">0.5</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">-</span><span style="color:#79B8FF">0.5</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.0</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">         0.5</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">-</span><span style="color:#79B8FF">0.5</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.0</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    };</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    GLuint VBO;</span></span>
+<span class="line"><span style="color:#B392F0">    glGenVertexArrays</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">VAO);</span></span>
+<span class="line"><span style="color:#B392F0">    glGenBuffers</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">&amp;</span><span style="color:#E1E4E8">VBO);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    glBindVertexArray</span><span style="color:#E1E4E8">(VAO);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    glBindBuffer</span><span style="color:#E1E4E8">(GL_ARRAY_BUFFER, VBO);</span></span>
+<span class="line"><span style="color:#B392F0">    glBufferData</span><span style="color:#E1E4E8">(GL_ARRAY_BUFFER, </span><span style="color:#F97583">sizeof</span><span style="color:#E1E4E8">(vertices), vertices, GL_STATIC_DRAW);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    glVertexAttribPointer</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, GL_FLOAT, GL_FALSE, </span><span style="color:#79B8FF">3</span><span style="color:#F97583"> *</span><span style="color:#F97583"> sizeof</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">float</span><span style="color:#E1E4E8">), (</span><span style="color:#F97583">void*</span><span style="color:#E1E4E8">)</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">    glEnableVertexAttribArray</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    glBindVertexArray</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">void</span><span style="color:#B392F0"> render</span><span style="color:#E1E4E8">(){</span></span>
+<span class="line"><span style="color:#B392F0">    updateViewport</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">    glViewport</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">800</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">600</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">    glClearColor</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0.2</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.3</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">0.3</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">1.0</span><span style="color:#F97583">f</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#B392F0">    glClear</span><span style="color:#E1E4E8">(GL_COLOR_BUFFER_BIT);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    glUseProgram</span><span style="color:#E1E4E8">(shaderProgram);</span></span>
+<span class="line"><span style="color:#B392F0">    glBindVertexArray</span><span style="color:#E1E4E8">(VAO);</span></span>
+<span class="line"><span style="color:#B392F0">    glDrawArrays</span><span style="color:#E1E4E8">(GL_TRIANGLES, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">(){</span></span>
+<span class="line"><span style="color:#B392F0">    initGL</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">    emscripten_set_main_loop</span><span style="color:#E1E4E8">(render, </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>As well as some html glue:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="html"><code><span class="line"><span style="color:#6A737D">&lt;!-- Index.html --&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;!</span><span style="color:#85E89D">DOCTYPE</span><span style="color:#B392F0"> html</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">html</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">meta</span><span style="color:#B392F0"> charset</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;utf-8&quot;</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">&gt;Hello Triangle - WebGL2&lt;/</span><span style="color:#85E89D">title</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#85E89D">    body</span><span style="color:#E1E4E8">, </span><span style="color:#85E89D">html</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">margin</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">padding</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#85E89D">    canvas</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">width</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100</span><span style="color:#F97583">vw</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">height</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100</span><span style="color:#F97583">vh</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">display</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">block</span><span style="color:#E1E4E8">; }</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">style</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">head</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">canvas</span><span style="color:#B392F0"> id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;canvas&quot;</span><span style="color:#E1E4E8">&gt;&lt;/</span><span style="color:#85E89D">canvas</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">script</span><span style="color:#B392F0"> src</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">&quot;hello_triangle.js&quot;</span><span style="color:#E1E4E8">&gt;&lt;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">body</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">html</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<p>Compile with:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sh"><code><span class="line"><span style="color:#B392F0">emcc</span><span style="color:#9ECBFF"> main.cpp</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> hello_triangle.js</span><span style="color:#79B8FF">\</span></span>
+<span class="line"><span style="color:#79B8FF">    -sUSE_WEBGL2=1\</span></span>
+<span class="line"><span style="color:#79B8FF">    -sFULL_ES3=1\</span></span>
+<span class="line"><span style="color:#79B8FF">    -sALLOW_MEMORY_GROWTH=1\</span></span>
+<span class="line"><span style="color:#79B8FF">    -sASSERTIONS=1</span></span></code></pre>
+<p>And run with:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="sh"><code><span class="line"><span style="color:#B392F0">emrun</span><span style="color:#79B8FF"> --port</span><span style="color:#79B8FF"> 8080</span><span style="color:#9ECBFF"> .</span></span></code></pre>
+<h3 id="combining-the-examples-into-one-project">Combining the examples into one project</h3>
+<p>Let’s introduce a common interface around the two:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="cpp"><code><span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> IBackend</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">public:</span></span>
+<span class="line"><span style="color:#F97583">    virtual</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> init</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    virtual</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> do_main_loop</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    virtual</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> cleanup</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> DesktopBackend</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">public</span><span style="color:#B392F0"> IBackend</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> BrowserBackend</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">public</span><span style="color:#B392F0"> IBackend</span><span style="color:#E1E4E8">;</span></span></code></pre>
+<p>For now, we are not going to make any major abstractions just copy the main stages of the examples into each of the methods.
+This allows us to only have one check in main for which platform we are building for using a preprocessor statement.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="cpp"><code><span class="line"><span style="color:#F97583">int</span><span style="color:#B392F0"> main</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">    #ifdef</span><span style="color:#B392F0"> __EMSCRIPTEN__</span></span>
+<span class="line"><span style="color:#E1E4E8">    BrowserBackend b;</span></span>
+<span class="line"><span style="color:#F97583">    #else</span></span>
+<span class="line"><span style="color:#E1E4E8">    DesktopBackend b;</span></span>
+<span class="line"><span style="color:#F97583">    #endif</span></span>
+<span class="line"><span style="color:#E1E4E8">    b-&gt;</span><span style="color:#B392F0">init</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    b-&gt;</span><span style="color:#B392F0">do_main_loop</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    b-&gt;</span><span style="color:#B392F0">cleanup</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Next we are going to introduce a build-system: <a href="https://cmake.org/">Cmake</a>.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="cmake"><code><span class="line"><span style="color:#6A737D"># introduce an option to check for what we are building</span></span>
+<span class="line"><span style="color:#F97583">option</span><span style="color:#E1E4E8">(BROWSER_BUILD </span><span style="color:#9ECBFF">&quot;Building for browser or not&quot;</span><span style="color:#F97583"> OFF</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">set</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">SOURCES</span><span style="color:#E1E4E8"> main.cpp IBackend.h )</span></span>
+<span class="line"><span style="color:#F97583">set</span><span style="color:#E1E4E8">(DEPENDENCIES)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8">(BROWSER_BUILD)</span></span>
+<span class="line"><span style="color:#F97583">    list</span><span style="color:#E1E4E8">(APPEND </span><span style="color:#B392F0">SOURCES</span><span style="color:#E1E4E8"> BrowserBackend.cpp BrowserBackend.h )</span></span>
+<span class="line"><span style="color:#6A737D">    # copying over the html shell</span></span>
+<span class="line"><span style="color:#F97583">    set</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">CMAKE_EXECUTABLE_SUFFIX</span><span style="color:#9ECBFF"> &quot;.js&quot;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    configure_file</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">${CMAKE_SOURCE_DIR}</span><span style="color:#E1E4E8">/index.html </span><span style="color:#F97583">${CMAKE_BINARY_DIR}</span><span style="color:#E1E4E8">/index.html COPYONLY)</span></span>
+<span class="line"><span style="color:#F97583">else</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#F97583">    list</span><span style="color:#E1E4E8">(APPEND </span><span style="color:#B392F0">SOURCES</span><span style="color:#E1E4E8"> DesktopBackend.cpp DesktopBackend.h )</span></span>
+<span class="line"><span style="color:#6A737D">    # fechting some dependencies here ...</span></span>
+<span class="line"><span style="color:#F97583">    list</span><span style="color:#E1E4E8">(APPEND DEPENDENCIES glad glfw )</span></span>
+<span class="line"><span style="color:#F97583">endif</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">add_executable</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">${EXE_FILE}</span><span style="color:#F97583"> ${SOURCES}</span><span style="color:#E1E4E8"> )</span></span>
+<span class="line"><span style="color:#F97583">target_link_libraries</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">${EXE_FILE}</span><span style="color:#B392F0"> PRIVATE</span><span style="color:#F97583"> ${DEPENDENCIES}</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8">(BROWSER_BUILD)</span></span>
+<span class="line"><span style="color:#6A737D">    # and don&#39;t forget to add in the flag here</span></span>
+<span class="line"><span style="color:#F97583">    set</span><span style="color:#E1E4E8">(MY_FLAGS</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;-sUSE_WEBGL2=1&quot;</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;-sFULL_ES3=1&quot;</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;-sALLOW_MEMORY_GROWTH=1&quot;</span></span>
+<span class="line"><span style="color:#9ECBFF">    &quot;-sASSERTIONS=1&quot;</span></span>
+<span class="line"><span style="color:#E1E4E8">    )</span></span>
+<span class="line"><span style="color:#F97583">    target_compile_options</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">${EXE_FILE}</span><span style="color:#B392F0"> PRIVATE</span><span style="color:#F97583"> ${MY_FLAGS}</span><span style="color:#E1E4E8"> )</span></span>
+<span class="line"><span style="color:#E1E4E8">    target_link_options(</span><span style="color:#F97583">${EXE_FILE}</span><span style="color:#B392F0"> PRIVATE</span><span style="color:#F97583"> ${MY_FLAGS}</span><span style="color:#E1E4E8"> )</span></span>
+<span class="line"><span style="color:#F97583">endif</span><span style="color:#E1E4E8">()</span></span></code></pre>
+<p>With this system in place we can focus on abstracting out the similarities across th examples.</p>
+<h3 id="abstracting-the-opengl-version">Abstracting the OpenGl version</h3>
+<p>As the examples currently stand we have different versions of Open Gl in our desktop and browser code. In order for us to
+find an Abstraction among the two we will need to find a standard both versions support.</p>
+<p>Introducing <strong>OpenGL ES 3.0</strong>. This is the standard supported by WebGL 2 and gives us a recent graphics API that is supported on both platforms.
+Our Emscripten browser example is already using <strong>OpenGL ES 3.0</strong> so we dont need to change anything about it.</p>
+<p>For our desktop version we need to change the version of the shader to <code> #version 300 es</code> and supply glfw with a new
+window hint:</p>
+<ul>
+<li><code> glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);</code></li>
+<li><code> glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);</code></li>
+</ul>
+<p>With the same GL version in place, we can extract out all the GL calls to the backend interface (
+I know interfaces shouldn’t normally have code but we’ll use this as a temporary stepping stone on our way to a uniform interace).
+When doing this you will run into the problem on not having clear insight which header the GL functions shall come from.
+We can get around this by declaring another header <code>gl_backend.h</code> which using another preprocessor includes the respective header.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="cpp"><code><span class="line"><span style="color:#F97583">#pragma</span><span style="color:#B392F0"> once</span></span>
+<span class="line"><span style="color:#F97583">#ifdef</span><span style="color:#B392F0"> __EMSCRIPTEN__</span></span>
+<span class="line"><span style="color:#F97583">    #include</span><span style="color:#9ECBFF"> &lt;GLES3/gl3.h&gt;</span></span>
+<span class="line"><span style="color:#F97583">#else</span></span>
+<span class="line"><span style="color:#F97583">    #include</span><span style="color:#9ECBFF"> &lt;glad/glad.h&gt;</span></span>
+<span class="line"><span style="color:#F97583">#endif</span></span></code></pre>
+<h3 id="abstracting-the-windowing-code">Abstracting the windowing code</h3>
+<p>Currently, our Emscripten example is using the Emscripten custom API to choose the context. In order to further
+simplify our code we can have Emscripten use glfw as well, but careful: this comes with drawbacks. The support for
+glfw isn’t officially considered stable and some features like multiple windows are not supported so handle with caution.</p>
+<p>I chose to go that route anyway, because it is going to save some complexity when it comes to input handling down the line.
+We will need to include the <code>-sUSE_GLFW=3</code> flag for our compilation step. Besides that the only real difference between the
+browser and desktop versions is the loading of glad and the way the main loop is handled.</p>
+<p>Now you might run into another problem: How can the content of the main-loop get access to the variables it needs to process.
+For this we are going to use a lambda: <code> const std::function&lt;void()&gt;&amp; main_loop_callback)</code> and for the browser side
+<code>emscripten_set_main_loop_arg()</code></p>
+<h3 id="asset-loading">Asset Loading</h3>
+<p>At some stage in our game we will need separate asset files for shaders, textures, etc. This is were another quirk of
+Emscripten comes into play. Of course for both platforms we will need cmake to copy over the assets:</p>
+<p><code> add_custom_target(copy_assets COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets $&lt;TARGET_FILE_DIR:${EXE_FILE}&gt;/assets )</code></p>
+<p>But additionally we will need emscripten to load the files. There are different ways to do this. Embedding, Fetching at Runtime,
+but for now we are going to focus on preloading the assets.</p>
+<p>The flag we need to add in order to do this is <code>&quot;${CMAKE_CURRENT_SOURCE_DIR}/assets/@/assets&quot;</code>
+And in order to fetch the assets in our game we can access them from <code>/assets/...</code> unlike on the desktop where you would use something like:
+<code>  std::filesystem::canonical(path);</code></p>
+<h3 id="concluding-remarks">Concluding Remarks</h3>
+<p>While it takes some setup and might seem complicated at first, I think that it is really cool that you can write exactly
+the same c++ code for browser and for desktop when developing a game, and this at such a low level where you are even interfacing
+a graphics API. You can find the code at the stage presented in this blog <a href="https://github.com/Hiqqup/cross_platform_game_engine/commit/1d5706301280a4d0bf35ebba4ac0a02f6c580184">here</a>. I left out some details when it
+comes to configuring your editor environment to support your cross-platform development endeavors.</p>
+<p>I might feature them in future posts. Till then stay curious :^)</p>  </div> </article> </main> <footer data-astro-cid-sz7xmlte>
+&copy; 2025 Julian Fambach. All rights reserved.
+<div class="social-links" data-astro-cid-sz7xmlte> <a href="https://github.com/Hiqqup" target="_blank" data-astro-cid-sz7xmlte> <span class="sr-only" data-astro-cid-sz7xmlte>Follow Hiqqup on Github</span> <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32" astro-icon="social/github" data-astro-cid-sz7xmlte><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" data-astro-cid-sz7xmlte></path></svg> </a> </div> </footer>  </body></html>
