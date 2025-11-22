@@ -1,0 +1,186 @@
+---
+title: 'Cross-platform Hello Triangle'
+description: 'Building a cross-platform game engine, using c++, OpenGl, glfw, emscripten.'
+pubDate: 'Nov 22 2025'
+heroImage: '../../assets/hello-textured-rectangle.png'
+---
+
+### Motivation
+
+The uni project I will attend next year (Game Lab 3), requires us to build our own game engine using low level technologies.
+The tech stack proposed is:
+
+<div class="table-with-borders" >
+
+
+| Core          | Auxiliary |
+|---------------|-----------|
+| C++           | glm       |
+| OpenGL (glad) | tinyGLTF  |
+| GLFW          | soloud    |
+
+</div>
+
+
+I am not 100% going to stick to these libraries, for instance I hope next year I will already be using the industry standard API Vulkan.
+Until then, I will have to do a lot of learning, for which OpenGl is a better starting point.
+
+### Why cross-platform?
+
+Another point where I will not 100% stick to the project guidelines is the target platform. We should develop our game
+mainly for Windows. Firstly I don't use any Windows machines so that might be a challenge.
+
+Next developing for any one
+platform requires players to download the game before playing it. This isn't great especially for small projects you
+don't know you are going to enjoy or that you don't trust. So I want my game to be in the browser so it is as accessible
+to everyone as possible.
+
+### How to achieve cross-platform?
+
+[GLFW](https://www.glfw.org/) already supports a lot of platforms, such as Linux, Windows and macOS.
+But how are we going to achieve browser-compatibility using the proposed tech stack?
+
+In comes [Emscripten](https://emscripten.org/), a toolchain for building C/C++ programms to WebAssembly. Let's see this in action.
+
+### Hello triangle example no abstractions
+
+If you are not familiar with, how a programm that renders is structured, I advise you checkout [learn OpenGl](https://learnopengl.com).
+It is a great resource for all things OpenGl, you can find the code we will be referencing [here](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp).
+
+For emscripten it is a little harder to find a hello triangle example so I'll propose this one to get us up and running:
+``` cpp
+// main.cpp
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
+#include <GLES3/gl3.h>
+#include <iostream>
+
+GLuint shaderProgram;
+GLuint VAO;
+
+const char* vertexShaderSource =
+R"(#version 300 es
+    layout(location = 0) in vec3 aPos;
+
+    void main() {
+        gl_Position = vec4(aPos, 1.0);
+    }
+)";
+const char* fragmentShaderSource =
+R"(#version 300 es
+    precision mediump float;
+    out vec4 FragColor;
+    void main() {
+        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);;
+    }
+)";
+
+void updateViewport() {
+    double width, height;
+    emscripten_get_element_css_size("#canvas", &width, &height);
+    emscripten_set_canvas_element_size("#canvas", (int)width, (int)height);
+    glViewport(0, 0, (int)width, (int)height);
+}
+void initGL(){
+    EmscriptenWebGLContextAttributes attr;
+    emscripten_webgl_init_context_attributes(&attr);
+    attr.alpha = false;
+    attr.depth = true;
+    attr.stencil = false;
+    attr.antialias = false;
+    attr.majorVersion = 2;
+    attr.minorVersion = 0;
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx =
+        emscripten_webgl_create_context("#canvas", &attr);
+
+    if (ctx <= 0) {
+        std::cerr << "Failed to create WebGL2 context\n";
+        return;
+    }
+
+    emscripten_webgl_make_context_current(ctx);
+
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+    glCompileShader(vertexShader);
+
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+    glCompileShader(fragmentShader);
+
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    float vertices[] = {
+        // positions
+         0.0f,  0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+    };
+
+    GLuint VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    glBindVertexArray(0);
+
+}
+
+void render(){
+    updateViewport();
+    glViewport(0, 0, 800, 600);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+int main(){
+    initGL();
+    emscripten_set_main_loop(render, 0, true);
+    return 0;
+}
+```
+As well as some html glue:
+``` html
+<!-- Index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello Triangle - WebGL2</title>
+  <style>
+    body, html { margin: 0; padding: 0; }
+    canvas { width: 100vw; height: 100vh; display: block; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script src="hello_triangle.js"></script>
+</body>
+</html>
+```
+Compile with:
+```
+emcc main.cpp -o hello_triangle.js     -sUSE_WEBGL2=1     -sFULL_ES3=1     -sALLOW_MEMORY_GROWTH=1     -sASSERTIONS=1
+```
+And run with:
+```
+emrun --port 8080 .
+```
