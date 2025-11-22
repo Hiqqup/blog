@@ -1,0 +1,13 @@
+---
+const {
+  href = "",
+  prepend = import.meta.env.BASE_URL.slice(0,-1), // default prefix
+  ...rest                 // all other props go into <a>
+} = Astro.props;
+
+const finalHref = prepend + href;
+---
+
+<a href={finalHref} {...rest}>
+  <slot />
+</a>

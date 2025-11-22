@@ -1,6 +1,6 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
-
+import InternalLink from "./InternalLink.astro"
 type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
@@ -9,9 +9,9 @@ const subpath = pathname.match(/[^\/]+/g);
 const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 ---
 
-<a href={import.meta.env.BASE_URL.slice(0, -1) + href} class:list={[className, { active: isActive }]} {...props}>
+<InternalLink href={href} class:list={[className, { active: isActive }]} {...props}>
 	<slot />
-</a>
+</InternalLink>
 <style>
 	a {
 		display: inline-block;
